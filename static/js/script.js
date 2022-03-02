@@ -140,3 +140,13 @@ function buttonsReset(){
         all_buttons[i].classList.add(copyAllButtons[i]);
     }
 }
+
+function buttonsRandom(){
+    var choices = ['btn-primary', 'btn-success', 'btn-danger', 'btn-warning'];    
+    // console.log(choices[randomNum]);
+    for(let i = 0; i < all_buttons.length; i++){
+        let randomNum =  Math.floor(Math.random() * 4);
+        all_buttons[i].classList.remove(all_buttons[i].classList[1]);
+        all_buttons[i].classList.add(choices[randomNum]);
+    }
+}
