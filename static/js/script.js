@@ -158,6 +158,7 @@ let blackjackGame={
     'you': {'scoreSpan': '#your-blackjack-result', 'div' : '#your-box', 'score': 0},
     'dealer': {'scoreSpan': '#dealer-blackjack-result', 'div' : '#dealer-box', 'score': 0},
     'cards': ['2','3','4','5','6','7','8','9','10','J','Q','K','A'],
+    'cardsMap': {'2' : 2,'3' : 3,'4' : 4,'5' : 5,'6' : 6,'7' : 7,'8' : 8,'9' : 9,'10' : 10 ,'J': 10,'Q': 10 ,'K': 10, 'A': [1,11]},
 }
 
 const YOU = blackjackGame['you'];
@@ -171,7 +172,9 @@ document.querySelector("#blackjack-deal-button").addEventListener('click',blackj
 
 function blackjackHit(){
     let card =  randomCard();
-   showCard(card,YOU);
+    showCard(card,YOU);
+    updateScore(card,YOU);
+    showScore(YOU);
 }
 
 function randomCard(){
@@ -180,10 +183,12 @@ function randomCard(){
 }
 
 function showCard(card,activePlayer){
-    let cardImage = document.createElement('img');
-    cardImage.src = `static/images/${card}.png`;
-    document.querySelector(activePlayer['div']).appendChild(cardImage);
-    hitSound.play();
+    if(activePlayer['score'] <= 21){
+        let cardImage = document.createElement('img');
+        cardImage.src = `static/images/${card}.png`;
+        document.querySelector(activePlayer['div']).appendChild(cardImage);
+        hitSound.play();
+    }
 }
 
 function blackjackDeal(){
@@ -196,5 +201,37 @@ function blackjackDeal(){
     for(i=0; i < dealerImages.length; i++){
         dealerImages[i].remove();
     }
+    YOU['score'] = 0;
+    DEALER['score'] = 0;
+    document.querySelector(YOU['scoreSpan']).textContent = YOU['score'];
+    document.querySelector(YOU['scoreSpan']).style.color = "#ffffff";
+    document.querySelector(DEALER['scoreSpan']).textContent = DEALER['score'];
+    document.querySelector(DEALER['scoreSpan']).style.color = "#ffffff";
+
 }
 
+
+function updateScore(card,activePlayer){
+    if (card == 'A'){
+        //If adding 11 keeps me below 21, and 11. Otherwise, add 1
+        if(activePlayer['score'] + blackjackGame['cardsMap'][card][1] <= 21){                
+            activePlayer['score'] += blackjackGame['cardsMap'][card][1];
+        }
+        else{
+            activePlayer['score'] += blackjackGame['cardsMap'][card][0];
+        }
+    }
+    else{
+        activePlayer['score'] += blackjackGame['cardsMap'][card];
+    }
+}    
+
+function showScore(activePlayer){
+    if(activePlayer['score'] > 21){
+        document.querySelector(activePlayer['scoreSpan']).textContent = "BUST!";
+        document.querySelector(activePlayer['scoreSpan']).style.color = "red";
+    }
+    else{
+        document.querySelector(activePlayer['scoreSpan']).textContent = activePlayer['score'];
+    }
+}
